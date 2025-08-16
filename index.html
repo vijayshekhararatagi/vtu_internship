@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineFLUX - Movie Booking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #00bcd4;
+      --secondary: #f50057;
+      --background: #121212;
+      --paper: #1e1e1e;
+      --text: #ffffff;
+      --neon-glow: 0 0 10px rgba(0, 188, 212, 0.7), 0 0 20px rgba(0, 188, 212, 0.5), 0 0 30px rgba(0, 188, 212, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .neon-text {
+      color: var(--primary);
+      text-shadow: var(--neon-glow);
+    }
+
+    .neon-border {
+      border: 1px solid var(--primary);
+      box-shadow: var(--neon-glow);
+    }
+
+    .glass-effect {
+      background: rgba(30, 30, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(18, 18, 18, 0.9);
+      box-shadow: 0 4px 20px rgba(0, 188, 212, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-left: 1.5rem;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 80vh;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin-top: 60px;
+    }
+
+    .hero-content {
+      max-width: 800px;
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+    }
+
+    .btn-primary:hover {
+      background-color: #00a0b7;
+      transform: translateY(-3px);
+    }
+
+    /* Movie Cards */
+    .section-title {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .movie-card {
+      background-color: var(--paper);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: var(--neon-glow);
+    }
+
+    .movie-poster {
+      height: 400px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .movie-content {
+      padding: 1.5rem;
+    }
+
+    .movie-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .movie-info {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1rem;
+    }
+
+    .movie-rating {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .movie-genre {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: var(--primary);
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .movie-poster-container {
+      position: relative;
+    }
+
+    /* Pages */
+    .page {
+      display: block;
+      padding-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .navbar-nav {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: var(--paper);
+        padding: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 1001;
+      }
+
+      .mobile-menu.active {
+        transform: translateX(0);
+      }
+
+      .mobile-menu-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      .mobile-nav {
+        list-style: none;
+        margin-top: 3rem;
+      }
+
+      .mobile-nav-item {
+        margin-bottom: 1.5rem;
+      }
+
+      .mobile-nav-link {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="#" class="navbar-brand"><span class="neon-text">CINE</span>FLUX</a>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+      <li class="nav-item"><a href="#movies" class="nav-link">Movies</a></li>
+    </ul>
+    <button class="mobile-menu-btn">☰</button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <button class="mobile-menu-close">✕</button>
+    <ul class="mobile-nav">
+      <li class="mobile-nav-item"><a href="#home" class="mobile-nav-link">Home</a></li>
+      <li class="mobile-nav-item"><a href="#movies" class="mobile-nav-link">Movies</a></li>
+    </ul>
+  </div>
+
+  <!-- Home Page -->
+  <div class="page" id="home">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title neon-text">EXPERIENCE THE FUTURE OF CINEMA</h1>
+          <p class="hero-subtitle">Book your tickets now for an immersive movie experience like never before.</p>
+          <a href="#movies" class="btn btn-primary">Browse Movies</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Movies Section -->
+    <section class="container" style="padding-top: 4rem;">
+      <h2 class="section-title neon-text">Featured Movies</h2>
+      <div class="movie-grid" id="featured-movies">
+        <!-- Movies will be loaded here -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Movies Page -->
+  <div class="page" id="movies">
+    <div class="container">
+      <h1 class="section-title neon-text">Now Showing</h1>
+      
+      <!-- Search and Filter -->
+      <div class="glass-effect" style="padding: 1.5rem; margin-bottom: 3rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;">
+          <div style="flex: 1; min-width: 250px;">
+            <input type="text" id="search-input" placeholder="Search Movies" style="width: 100%; padding: 0.8rem; border-radius: 4px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+          </div>
+          <div>
+            <select id="genre-filter" style="padding: 0.8rem; border-radius: 4px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+              <option value="all">All Genres</option>
+              <option value="Action">Action</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Comedy">Comedy</option>
+              <option value="Fantasy">Fantasy</option>
+              <option value="Horror">Horror</option>
+              <option value="Sci-Fi">Sci-Fi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Movies Grid -->
+      <div class="movie-grid" id="all-movies">
+        <!-- Movies will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="booking-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+    <div class="glass-effect" style="width: 90%; max-width: 500px; padding: 2rem; position: relative;">
+      <button id="close-modal" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">✕</button>
+      <h2 class="neon-text" style="margin-bottom: 1.5rem;">Book Tickets</h2>
+      <div id="booking-content">
+        <h3 id="booking-movie-title" style="margin-bottom: 1rem;"></h3>
+        <p id="booking-movie-info" style="margin-bottom: 1rem;"></p>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem;">Select Date:</label>
+          <select id="booking-date" style="width: 100%; padding: 0.8rem; border-radius: 4px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="day-after">Day After Tomorrow</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem;">Number of Tickets:</label>
+          <select id="booking-tickets" style="width: 100%; padding: 0.8rem; border-radius: 4px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem;">Total Amount:</label>
+          <p id="booking-total" class="neon-text" style="font-size: 1.5rem; font-weight: bold;"></p>
+        </div>
+        
+        <button id="confirm-booking" class="btn btn-primary" style="width: 100%;">Confirm Booking</button>
+      </div>
+      
+      <div id="booking-success" style="display: none; text-align: center;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">✓</div>
+        <h3 style="margin-bottom: 1rem;">Booking Successful!</h3>
+        <p style="margin-bottom: 2rem;">Your tickets have been booked successfully.</p>
+        <button id="close-success" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Movie Data with direct image URLs
+    const movies = [
+      {
+        id: 1,
+        title: 'Quantum Horizon',
+        image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80',
+        genre: 'Sci-Fi',
+        rating: 4.8,
+        description: 'A journey beyond the boundaries of space and time.',
+        duration: '2h 15m',
+        price: 999,
+        showtime: '7:30 PM Today'
+      },
+      {
+        id: 2,
+        title: 'Neon Shadows',
+        image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Action',
+        rating: 4.5,
+        description: 'In a world of cybernetic enhancements, one detective fights for justice.',
+        duration: '2h 5m',
+        price: 899,
+        showtime: '8:00 PM Today'
+      },
+      {
+        id: 3,
+        title: 'Digital Dreams',
+        image: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Adventure',
+        rating: 4.7,
+        description: 'Enter a virtual reality where dreams become real.',
+        duration: '1h 55m',
+        price: 899,
+        showtime: '6:45 PM Today'
+      },
+      {
+        id: 4,
+        title: 'Eternal Echo',
+        image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Fantasy',
+        rating: 4.6,
+        description: 'A tale of magic, mystery, and eternal love.',
+        duration: '2h 30m',
+        price: 1099,
+        showtime: '5:15 PM Today'
+      },
+      {
+        id: 5,
+        title: 'Velocity',
+        image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Action',
+        rating: 4.3,
+        description: 'Speed is life in this high-octane racing thriller.',
+        duration: '1h 48m',
+        price: 899,
+        showtime: '9:00 PM Today'
+      },
+      {
+        id: 6,
+        title: 'Cosmic Whispers',
+        image: 'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80',
+        genre: 'Sci-Fi',
+        rating: 4.9,
+        description: 'The universe has secrets waiting to be discovered.',
+        duration: '2h 20m',
+        price: 999,
+        showtime: '7:00 PM Today'
+      },
+      {
+        id: 7,
+        title: 'Laughter Therapy',
+        image: 'https://images.unsplash.com/photo-1543584756-31dc18f1c0ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Comedy',
+        rating: 4.2,
+        description: 'Sometimes laughter is the best medicine.',
+        duration: '1h 40m',
+        price: 899,
+        showtime: '6:30 PM Today'
+      },
+      {
+        id: 8,
+        title: 'Haunted Memories',
+        image: 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+        genre: 'Horror',
+        rating: 4.4,
+        description: 'The past never stays buried for long.',
+        duration: '1h 50m',
+        price: 899,
+        showtime: '9:30 PM Today'
+      }
+    ];
+
+    // DOM Elements
+    const navbar = document.querySelector('.navbar');
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileMenuClose = document.querySelector('.mobile-menu-close');
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+    const featuredMoviesContainer = document.getElementById('featured-movies');
+    const allMoviesContainer = document.getElementById('all-movies');
+    const searchInput = document.getElementById('search-input');
+    const genreFilter = document.getElementById('genre-filter');
+    
+    // Booking Modal Elements
+    const bookingModal = document.getElementById('booking-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const bookingMovieTitle = document.getElementById('booking-movie-title');
+    const bookingMovieInfo = document.getElementById('booking-movie-info');
+    const bookingDateSelect = document.getElementById('booking-date');
+    const bookingTicketsSelect = document.getElementById('booking-tickets');
+    const bookingTotal = document.getElementById('booking-total');
+    const confirmBookingBtn = document.getElementById('confirm-booking');
+    const bookingContent = document.getElementById('booking-content');
+    const bookingSuccess = document.getElementById('booking-success');
+    const closeSuccessBtn = document.getElementById('close-success');
+
+    let currentMovie = null;
+
+    // Functions
+    function createMovieCard(movie) {
+      return `
+        <div class="movie-card">
+          <div class="movie-poster-container">
+            <img src="${movie.image}" alt="${movie.title}" class="movie-poster">
+            <div class="movie-rating">★ ${movie.rating}</div>
+            <div class="movie-genre">${movie.genre}</div>
+          </div>
+          <div class="movie-content">
+            <h3 class="movie-title">${movie.title}</h3>
+            <p class="movie-info">${movie.description}</p>
+            <p class="movie-info">${movie.duration}</p>
+            <p class="movie-info">₹${movie.price.toFixed(2)}</p>
+            <a href="#" class="btn btn-primary book-now-btn" data-movie-id="${movie.id}" style="width: 100%; text-align: center; margin-top: 1rem;">Book Now</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadFeaturedMovies() {
+      // Get 3 random movies
+      const shuffled = [...movies].sort(() => 0.5 - Math.random());
+      const featured = shuffled.slice(0, 3);
+      
+      featuredMoviesContainer.innerHTML = featured.map(movie => createMovieCard(movie)).join('');
+      addBookNowListeners();
+    }
+
+    function loadAllMovies() {
+      allMoviesContainer.innerHTML = movies.map(movie => createMovieCard(movie)).join('');
+      addBookNowListeners();
+    }
+
+    function filterMovies() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const genre = genreFilter.value;
+      
+      let filtered = movies;
+      
+      if (searchTerm) {
+        filtered = filtered.filter(movie => movie.title.toLowerCase().includes(searchTerm));
+      }
+      
+      if (genre !== 'all') {
+        filtered = filtered.filter(movie => movie.genre === genre);
+      }
+      
+      allMoviesContainer.innerHTML = filtered.map(movie => createMovieCard(movie)).join('');
+      addBookNowListeners();
+    }
+
+    // Function to update booking total
+    function updateBookingTotal() {
+      if (!currentMovie) return;
+      
+      const tickets = parseInt(bookingTicketsSelect.value);
+      const total = currentMovie.price * tickets;
+      
+      bookingTotal.textContent = `₹${total.toFixed(2)}`;
+    }
+
+    // Function to open booking modal
+    function openBookingModal(movieId) {
+      currentMovie = movies.find(movie => movie.id === parseInt(movieId));
+      
+      if (currentMovie) {
+        bookingMovieTitle.textContent = currentMovie.title;
+        bookingMovieInfo.textContent = `${currentMovie.duration} | ${currentMovie.genre} | ${currentMovie.showtime}`;
+        
+        updateBookingTotal();
+        
+        bookingContent.style.display = 'block';
+        bookingSuccess.style.display = 'none';
+        
+        bookingModal.style.display = 'flex';
+      }
+    }
+
+    // Event listener for Book Now buttons
+    function addBookNowListeners() {
+      const bookNowButtons = document.querySelectorAll('.book-now-btn');
+      
+      bookNowButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          const movieId = button.getAttribute('data-movie-id');
+          openBookingModal(movieId);
+        });
+      });
+    }
+
+    // Event Listeners
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.add('active');
+    });
+
+    mobileMenuClose.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+    });
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+      });
+    });
+
+    searchInput.addEventListener('input', filterMovies);
+    genreFilter.addEventListener('change', filterMovies);
+
+    // Booking Modal Event Listeners
+    closeModalBtn.addEventListener('click', () => {
+      bookingModal.style.display = 'none';
+    });
+
+    bookingTicketsSelect.addEventListener('change', updateBookingTotal);
+
+    confirmBookingBtn.addEventListener('click', () => {
+      bookingContent.style.display = 'none';
+      bookingSuccess.style.display = 'block';
+    });
+
+    closeSuccessBtn.addEventListener('click', () => {
+      bookingModal.style.display = 'none';
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadFeaturedMovies();
+      loadAllMovies();
+    });
+
+    // Load movies immediately to ensure they display
+    loadFeaturedMovies();
+    loadAllMovies();
+  </script>
+</body>
+</html>
